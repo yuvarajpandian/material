@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { MatSort, Sort} from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
+
 
 export interface PeriodicElement {
   name: string;
@@ -30,9 +31,10 @@ export class AddRemoveTableComponent {
   @ViewChild(MatTable) table!: MatTable<PeriodicElement>;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['name', 'weight', 'symbol', 'position'];
+  columnsToDisplay: string[] = this.displayedColumns.slice();
   dataSource: MatTableDataSource<PeriodicElement> = new MatTableDataSource(
-    ELEMENT_DATA
+    JSON.parse(JSON.stringify(ELEMENT_DATA))
   );
 
   ngOnInit(): void {
@@ -72,12 +74,50 @@ export class AddRemoveTableComponent {
 
   addData() {
     const randomElementIndex = Math.floor(Math.random() * ELEMENT_DATA.length);
-    ELEMENT_DATA.push(ELEMENT_DATA[randomElementIndex]);
-    this.dataSource.data = ELEMENT_DATA.slice(); // Update the table data
+  
+    
+    
+    if (!this.dataSource?.data?.length) {
+
+      this.dataSource.data = [ELEMENT_DATA[randomElementIndex]]
+
+    }else{
+      this.dataSource.data.push(ELEMENT_DATA[randomElementIndex]);
+      this.dataSource.data =  this.dataSource.data 
+    }
+
+    this.table.renderRows();
+
+    
   }
 
   removeData() {
-    ELEMENT_DATA.pop();
-    this.dataSource.data = ELEMENT_DATA.slice(); // Update the table data
+    this.dataSource.data.pop();
+    this.dataSource.data = this.dataSource.data;
+    this.table.renderRows()
+  }
+
+  addColumn() {
+    const randomColumn = Math.floor(Math.random() * this.displayedColumns.length);
+    this.columnsToDisplay.push(this.displayedColumns[randomColumn]);
+    
+  }
+  removeColumn() {
+    if (this.columnsToDisplay.length) {
+      this.columnsToDisplay.pop();
+    }
+  }
+
+  shuffle() {
+    let currentIndex = this.columnsToDisplay.length;
+    while (0 !== currentIndex) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // Swap
+      let temp = this.columnsToDisplay[currentIndex];
+      this.columnsToDisplay[currentIndex] = this.columnsToDisplay[randomIndex];
+      this.columnsToDisplay[randomIndex] = temp;
+    }
   }
 }
