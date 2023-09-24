@@ -1,0 +1,11 @@
+table {
+    width: 1400px;
+  }
+
+  .demo-button-container {
+    padding-bottom: 16px;
+  }
+  
+  .demo-button + .demo-button {
+    margin-left: 8px;
+  }
